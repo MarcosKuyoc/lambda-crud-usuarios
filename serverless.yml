@@ -1,0 +1,65 @@
+service: lambda-crud-usuarios
+frameworkVersion: '3'
+
+custom:
+  serverlessPluginTypescript:
+    tsConfigFileLocation: './tsconfig.build.json'
+  serverless-dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      docker: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'dynamodb:*'
+          Resource: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/usersTable
+
+functions:
+  find-user:
+    handler: src/application/find.handler
+    events:
+      - http:
+          path: users/{id}
+          method: get
+  create-user:
+    handler: src/application/create.handler
+    events:
+      - http:
+          path: users
+          method: POST
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-dynamodb
+  - serverless-offline
+
+package: 
+  individually: true
+  patterns:
+    - "!.dynamodb"
+    - "!.node_modules"
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
