@@ -1,6 +1,8 @@
-# Serverless Framework: Node Con Typescript y HTTP API En AWS
+# Serverless Framework: Crud de usuarios en Node con Typescript, Api Gateway y DynamoDb
 
-Este template demuestra como hacer una simple HTTP API con Node.js y Typescript corriendo en una AWS Lambda y API Gateway usando el Serverless Framework v3.
+Microservicio con Serverless Framework v3, usando Node.js, Typescript: crud de usuarios, corriendo en una AWS Lambda con API Gateway y almacenamiento en DynamoDB.
+
+El servicio puede correr de manera offline.
 
 
 ## Setup
@@ -19,14 +21,9 @@ npm install
 $ npm run deploy:offline
 ```
 
-**Invoke la función de forma local.**
+**Pruebe los siguientes endpoints**
 
 ```
-sls invoke local --function hello
-```
-
-**Pruebe la función**
-
-```
-curl https://localhost:3000/
+GET https://localhost:3000/dev/users/{id}
+POST https://localhost:3000/dev/users
 ```
