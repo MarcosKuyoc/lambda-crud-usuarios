@@ -42,6 +42,21 @@ functions:
       - http:
           path: users/{id}
           method: PATCH
+  delete-user:
+    handler: src/application/delete.handler
+    events:
+      - http:
+          path: users/{id}
+          method: DELETE
+  delete-user-py:
+    handler: src/application/delete-py.handler
+    runtime: python3.9
+    environment:
+      VIRTUAL_ENV_PATH: ./sls_test_py/bin/python
+    events:
+      - http:
+          path: users/py/{id}
+          method: DELETE
 
 plugins:
   - serverless-plugin-typescript

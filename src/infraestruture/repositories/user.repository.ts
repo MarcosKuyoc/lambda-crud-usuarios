@@ -93,4 +93,21 @@ export class UserRepositoryDynamo {
       throw error;
     }
   }
+
+  async delete(id: string) {
+    try {
+      const params = {
+        TableName: 'usersTable',
+        Key: { pk: id },
+      };
+
+      const result =  await clientDynamoDB.delete(params).promise();
+      console.debug(result);
+      return id;
+    } catch (error) {
+      console.error('[UserRepositoryDynamo -> delete]');
+      console.error(error.message);
+      throw error;
+    }
+  }
 }

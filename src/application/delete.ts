@@ -1,6 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { UserService } from '../domain/services/user.service';
-import { ResponseNewUser } from '../domain/interfaces/new-user.interface';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
@@ -12,30 +11,20 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       throw new Error('id invalido');
     }
 
-    if (!event.body) {
-      throw new Error('body invalid');
-    }
-
-    let bodyRequest: ResponseNewUser;
-    
-    if (typeof event.body === 'string') {
-      bodyRequest = JSON.parse(event.body);
-    } else {
-      bodyRequest = event.body
-    }
-    
-    console.info('Solicitando la actualización de un nuevo usario');
     const userId = event.pathParameters.id;
+    console.info(`eliminando el usuario: ${userId}`);
     const usersService = new UserService();
-    const user = await usersService.update(userId, bodyRequest);
+    const user = await usersService.delete(userId);
     
-    console.info('Usuario actualizado satisfactoriamente');
+    console.info('El usuario fue eliminado satisfactoriamente');
     return {
       statusCode: 200,
-      body: JSON.stringify(user),
+      body: JSON.stringify({
+        message: `El usuario ${user} fue eliminado correctamente`,
+      })
     };
   } catch (error) {
-    console.error('[update]');
+    console.error('[delete]');
     console.error(error.message);
     return {
       statusCode: 500,

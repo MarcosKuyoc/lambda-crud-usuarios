@@ -16,4 +16,9 @@ export class UserService {
     const usersRepository = new UserRepositoryDynamo();
     return await usersRepository.update(id, data);
   }
+
+  async delete(id: string) {
+    const userRepository = new UserRepositoryDynamo();
+    return userRepository.delete(id);
+  }
 }
