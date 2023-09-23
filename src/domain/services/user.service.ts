@@ -11,4 +11,9 @@ export class UserService {
     const usersRepository = new UserRepositoryDynamo();
     return await usersRepository.create(data);
   }
+
+  async update(id: string, data: RequestNewUser) {
+    const usersRepository = new UserRepositoryDynamo();
+    return await usersRepository.update(id, data);
+  }
 }

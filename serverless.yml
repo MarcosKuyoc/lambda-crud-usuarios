@@ -36,6 +36,12 @@ functions:
       - http:
           path: users
           method: POST
+  update-user:
+    handler: src/application/update.handler
+    events:
+      - http:
+          path: users/{id}
+          method: PATCH
 
 plugins:
   - serverless-plugin-typescript

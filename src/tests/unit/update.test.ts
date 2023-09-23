@@ -1,28 +1,30 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { handler } from '../../application/create';
+import { handler } from '../../application/update';
 import { UserService } from '../../domain/services/user.service';
 
-describe('Unit test for create users', function () {
+describe('Unit test for update users', function () {
 
   it('verifies successful response', async () => {
     const event: APIGatewayProxyEvent = {
-      httpMethod: 'post',
+      httpMethod: 'PATCH',
       body: JSON.stringify({
-        name: 'Marcos',
-        lastName: 'Kuyoc'
+        name: 'Juan Marcos',
+        lastName: 'Kuyoc Escamilla'
       }),
       headers: {},
       isBase64Encoded: false,
       multiValueHeaders: {},
       multiValueQueryStringParameters: {},
       path: '/users/{id}',
-      pathParameters: {},
+      pathParameters: {
+        id: '1'
+      },
       queryStringParameters: {},
       requestContext: {
         accountId: '123456789012',
         apiId: '1234',
         authorizer: {},
-        httpMethod: 'get',
+        httpMethod: 'PATCH',
         identity: {
           accessKey: '',
           accountId: '',
@@ -59,15 +61,15 @@ describe('Unit test for create users', function () {
     };
     const expectedUser = {
       pk: '1',
-      name: 'Marcos',
-      lastName: 'Kuyoc'
+      name: 'Juan Marcos',
+      lastName: 'Kuyoc Escamilla'
     }
-    const createMock = jest
-      .spyOn(UserService.prototype, 'create')
+    const updateMock = jest
+      .spyOn(UserService.prototype, 'update')
       .mockResolvedValueOnce(expectedUser);
     const result: APIGatewayProxyResult = await handler(event);
 
-    expect(createMock).toHaveBeenCalledTimes(1);
+    expect(updateMock).toHaveBeenCalledTimes(1);
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(JSON.stringify(expectedUser));
   });
