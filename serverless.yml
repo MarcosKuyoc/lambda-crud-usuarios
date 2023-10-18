@@ -16,6 +16,9 @@ custom:
 provider:
   name: aws
   runtime: nodejs16.x
+  apiGateway: 
+    apiKeys:
+      - lambda-crud-usuarios-apikey
   iam:
     role:
       statements:
@@ -34,6 +37,7 @@ functions:
         - 'src/infraestructure/**'
     events:
       - http:
+          private: true
           path: users/{id}
           method: GET
           request:
@@ -65,6 +69,7 @@ functions:
         - 'src/infraestructure/**'
     events:
       - http:
+          private: true
           path: users/{id}
           method: PATCH
           request:
@@ -83,6 +88,7 @@ functions:
         - 'src/infraestructure/**'
     events:
       - http:
+          private: true
           path: users/{id}
           method: DELETE
           request:
@@ -100,6 +106,7 @@ functions:
       VIRTUAL_ENV_PATH: ./sls_test_py/bin/python
     events:
       - http:
+          private: true
           path: users/py/{id}
           method: DELETE
           request:
