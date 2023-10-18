@@ -12,6 +12,9 @@ custom:
       inMemory: true
       migrate: true
       docker: true
+  serverless-offline:
+    apiKey:
+      - lambda-crud-usuarios-apikey
 
 provider:
   name: aws
