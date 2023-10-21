@@ -8,7 +8,7 @@ Se desarrolla una aplicación básica, basada en el uso de microservicios con Se
    - lastName
    - age
 - Cada uno de los endpoints deberá tener una seguridad básica basada en API Key, excepto el endpoint para la creación de un nuevo usuario, el cual debe utilizar autenticación basada en JWT.
-- Se debe crear un la Cola(SQS) que procesara los likes de los usuarios de forma sincronica.
+- Se debe crear un Cola(SQS) que procesara los likes de los usuarios de forma asincrónica.
 
 ## Tecnologias usadas
 - Node
