@@ -14,3 +14,4 @@ package-lock.json
 .build
 
 sls_test_py/
+yarn.lock
