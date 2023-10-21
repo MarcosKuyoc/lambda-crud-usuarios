@@ -1,8 +1,14 @@
 # Serverless Framework: Microservicios con AWS
 Se desarrolla una aplicación básica, basada en el uso de microservicios con Serverless Framework v3.
 
-## Descripcion:
-Realizar un CRUD de usuarios. Los datos que debe contener un usuario son: nombre, apellido y edad. Cada uno de los endpoints deberá tener una seguridad básica basada en API Key, excepto el endpoint para la creación de un nuevo usuario, el cual debe utilizar autenticación basada en JWT.
+## Tarea - Realizar un CRUD de usuarios
+- Los datos que debe contener un usuario son:
+   - pk(identificador del usuario)
+   - name
+   - lastName
+   - age
+- Cada uno de los endpoints deberá tener una seguridad básica basada en API Key, excepto el endpoint para la creación de un nuevo usuario, el cual debe utilizar autenticación basada en JWT.
+- Se debe crear un la Cola(SQS) que procesara los likes de los usuarios de forma sincronica.
 
 ## Tecnologias usadas
 - Node
