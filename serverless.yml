@@ -1,6 +1,11 @@
 service: lambda-crud-usuarios
 frameworkVersion: '3'
 
+package:
+  individually: true
+  patterns:
+    - "!*/**"
+
 custom:
   serverlessPluginTypescript:
     tsConfigFileLocation: './tsconfig.build.json'
@@ -15,29 +20,39 @@ custom:
   serverless-offline:
     apiKey:
       - lambda-crud-usuarios-apikey
+  serverless-offline-sqs:
+    autoCreate: true
+    apiVersion: '2012-11-05'
+    endpoint: http://localhost:9324
+    region: us-east-1
+    accessKeyId: doesnt_matter
+    secretAccessKey: doesnt_matter
+    skipCacheInvalidation: false
 
 provider:
   name: aws
   runtime: nodejs16.x
-  apiGateway: 
-    apiKeys:
-      - lambda-crud-usuarios-apikey
   iam:
     role:
       statements:
         - Effect: Allow
           Action: 'dynamodb:*'
           Resource: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/usersTable
+        # - Effect: Allow
+        #   Action:
+        #     - 'sqs:*'
+        #   Resource: arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:likequeue
 
 functions:
   find-user:
-    handler: src/application/find.handler
+    handler: src/services/find/handler.handler
     package:
       patterns:
         - '!src/test/**'
-        - 'src/application/find.ts'
-        - 'src/domain/**'
-        - 'src/infraestructure/**'
+        - 'src/services/find/handler.ts'
+        - 'src/services/shared/interfaces/new-user.interface.ts'
+        - 'src/resources/aws/aws-dynamodb.ts'
+        - 'src/resources/lambdas/find-by-id.ts'
     events:
       - http:
           private: true
@@ -48,28 +63,30 @@ functions:
               paths:
                 id: true
   create-user:
-    handler: src/application/create.handler
+    handler: src/services/create/handler.handler
     package:
       patterns:
         - '!src/test/**'
-        - 'src/application/create.ts'
-        - 'src/domain/**'
-        - 'src/infraestructure/**'
+        - 'src/services/create/handler.ts'
+        - 'src/services/shared/interfaces/new-user.interface.ts'
+        - 'src/resources/aws/aws-dynamodb.ts'
+        - 'src/resources/lambdas/create-user.ts'
     events:
       - http:
           path: users
           method: POST
           request:
             schemas:
-              appication/json: ${file(src/domain/schemas/user.schema.json)}
+              appication/json: ${file(src/services/shared/schemas/user.schema.json)}
   update-user:
-    handler: src/application/update.handler
+    handler: src/services/update/handler.handler
     package:
       patterns:
         - '!src/test/**'
-        - 'src/application/update.ts'
-        - 'src/domain/**'
-        - 'src/infraestructure/**'
+        - 'src/services/update/handler.ts'
+        - 'src/services/shared/interfaces/new-user.interface.ts'
+        - 'src/resources/aws/aws-dynamodb.ts'
+        - 'src/resources/lambdas/update-user.ts'
     events:
       - http:
           private: true
@@ -80,15 +97,16 @@ functions:
               paths:
                 id: true
             schemas:
-              appication/json: ${file(src/domain/schemas/user.schema.json)}
+              appication/json: ${file(src/services/shared/schemas/user.schema.json)}
   delete-user:
-    handler: src/application/delete.handler
+    handler: src/services/delete/handler.handler
     package:
       patterns:
         - '!src/test/**'
-        - 'src/application/delete.ts'
-        - 'src/domain/**'
-        - 'src/infraestructure/**'
+        - 'src/services/delete/handler.ts'
+        - 'src/services/shared/interfaces/new-user.interface.ts'
+        - 'src/resources/aws/aws-dynamodb.ts'
+        - 'src/resources/lambdas/delete-user.ts'
     events:
       - http:
           private: true
@@ -99,11 +117,11 @@ functions:
               paths:
                 id: true
   delete-user-py:
-    handler: src/application/delete-py.handler
+    handler: src/services/delete/delete-py.handler
     package:
       patterns:
         - '!src/test/**'
-        - 'src/application/delete-py.py'
+        - 'src/services/delete/delete-py.py'
     runtime: python3.9
     environment:
       VIRTUAL_ENV_PATH: ./sls_test_py/bin/python
@@ -116,19 +134,60 @@ functions:
             parameters:
               paths:
                 id: true
+  likeProcessor:
+    handler: src/services/sqs/like-user.handler
+    reservedConcurrency: 1
+    package:
+      patterns:
+        - '!src/test/**'
+        - 'src/services/sqs/like-user.ts'
+        - 'src/resources/aws/aws-dynamodb.ts'
+        - 'src/resources/lambdas/update-likes.ts'
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - LikeQueue
+              - Arn
+  publisher:
+    handler: src/services/sqs/publisher.handler
+    package:
+      patterns:
+        - '!src/test/**'
+        - 'src/services/sqs/publisher.ts'
+        - 'src/resources/aws/aws-sqs.ts'
+        - 'src/resources/sqs/send-message-sqs.ts'
+    events:
+      - http:
+          private: true
+          method: POST
+          path: like
 
 plugins:
   - serverless-plugin-typescript
   - serverless-dynamodb
+  - serverless-lift
+  - serverless-offline-sqs
   - serverless-offline
-
-package:
-  individually: true
-  patterns:
-    - "!*/**"
 
 resources:
   Resources:
+    LikeQueue:
+      Type: 'AWS::SQS::Queue'
+      Properties:
+        QueueName: my-like-queue
+    LikeQueueEventSourceMapping:
+      Type: "AWS::Lambda::EventSourceMapping"
+      Properties:
+        BatchSize: 1  # Ajusta el valor del batchSize según tus necesidades
+        EventSourceArn:
+          Fn::GetAtt:
+            - LikeQueue
+            - Arn
+        FunctionName:
+          Fn::GetAtt:
+            - LikeProcessorLambdaFunction
+            - Arn 
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
