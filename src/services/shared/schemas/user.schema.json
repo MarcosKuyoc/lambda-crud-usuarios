@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-04/schema#",
+  "title": "User",
+  "type": "object",
+  "required": ["name", "age"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del usuario"
+    },
+    "lastName": {
+      "type": "string",
+      "description": "Apellido del usuario"
+    },
+    "age": {
+      "description": "La edad debe ser mayor a 18",
+      "type": "integer",
+      "minimum": 18
+    }
+  }
+}
