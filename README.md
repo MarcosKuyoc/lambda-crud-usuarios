@@ -1,16 +1,28 @@
-# Serverless Framework: Crud de usuarios en Node con Typescript, Api Gateway y DynamoDb
+# Serverless Framework: Microservicios con AWS
+Se desarrolla una aplicacion basica, basada en el uso de microservicio con Serverless Framework v3.
 
-Microservicio con Serverless Framework v3, usando Node.js, Typescript: crud de usuarios, corriendo en una AWS Lambda con API Gateway y almacenamiento en DynamoDB.
+## Tecnologias usadas
+- Node
+- Typescript
+- Aws Lambdas
+- Api Gateway
+- Sqs
+- DynamoDB
+- Custom Autorization
+- Api Key
 
-El servicio puede correr de manera offline.
-
+## Requerimientos
+- Tener instalada la version v18.16.0 de Node
+- Recomendamos usar NNM para poder manejar las versiones
 
 ## Setup
 
-Corra este comando e inicialice el proyecto en su espacio de trabajo.
+```
+nvm use
+```
 
 ```
-npm install
+yarn install
 ```
 
 ## Usage
@@ -27,3 +39,6 @@ $ npm run deploy:offline
 GET https://localhost:3000/dev/users/{id}
 POST https://localhost:3000/dev/users
 ```
+
+### Para correr el api key
+Recuerda agregar en los headers x-api-key con la clave proporcionada
